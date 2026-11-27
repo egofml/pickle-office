@@ -695,6 +695,27 @@
     return d;
   }
 
+  // 움직이는 아바타도 쉽게 누를 수 있게: 근처를 누르면 가장 가까운 피클을 부른다
+  let lastPokeAt = 0;
+  stage.addEventListener('click', e => {
+    if (e.target.closest && e.target.closest('.zone-label')) return;
+    const rect = stage.getBoundingClientRect();
+    if (!rect.width) return;
+    const k = 1000 / rect.width;
+    const x = (e.clientX - rect.left) * k;
+    const y = (e.clientY - rect.top) * k;
+    let best = null, bd = 1e9;
+    for (const a of actors.values()) {
+      const d = Math.hypot(a.x - x, (a.y - y) * 1.35);
+      if (d < bd) { bd = d; best = a; }
+    }
+    if (!best || bd > 44) return;
+    const now = Date.now();
+    if (now - lastPokeAt < 350) return;
+    lastPokeAt = now;
+    poke(best.member);
+  });
+
   function syncActors() {
     const wanted = visibleMembers();
     const ids = new Set(wanted.map(w => w.id));
