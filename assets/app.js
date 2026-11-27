@@ -48,7 +48,8 @@
   const params = new URLSearchParams(location.search);
   const roomFromUrl = (params.get('room') || '').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 20);
   const newRoomCode = () => 'office-' + Math.random().toString(36).slice(2, 7);
-  const room = roomFromUrl || LS.get('po:room', '') || newRoomCode();
+  const prevRoom = LS.get('po:room', '');
+  const room = roomFromUrl || prevRoom || newRoomCode();
   LS.set('po:room', room);
   if (!roomFromUrl) {
     try {
@@ -713,6 +714,7 @@
           pause: rand(0.2, 4), speed: m.isMe ? 26 : rand(18, 27), member: m
         };
         actors.set(m.id, a);
+        el.addEventListener('pointerenter', () => { a.pause = Math.max(a.pause, 3); });
         place(a);
       } else {
         a.member = m;
@@ -1228,7 +1230,7 @@
     LS.set('po:welcomed', 1);
     setTimeout(() => toast('사무실에 오신 걸 환영해요! 👋', 2400), 700);
   }
-  if (roomFromUrl && !firstVisit) {
+  if (roomFromUrl && !firstVisit && prevRoom && prevRoom !== room) {
     setTimeout(() => toast('초대받은 사무실「' + app.roomName + '」에 들어왔어요', 2600), 600);
   }
 })();

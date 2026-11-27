@@ -300,6 +300,7 @@ html[data-theme="dark"] .zone-label text{fill:#cbbfe0}
   pointer-events:auto;cursor:pointer;
   will-change:transform;
 }
+.critter::before{content:"";position:absolute;inset:-16px -12px -12px;border-radius:50%}
 .critter .bob{position:relative;width:100%;height:100%;animation:bob 3s ease-in-out infinite}
 @keyframes bob{
   0%,100%{transform:translateY(0)}
