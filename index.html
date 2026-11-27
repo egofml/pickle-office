@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>🏢 피클 합동 비서실</title>
+<meta name="description" content="피클들이 함께 일하는 귀여운 2D 합동 비서실 — 같이 채팅하고, 업무를 나누고, 다른 피클을 초대해요." />
+<meta name="theme-color" content="#f6f2ec" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏢</text></svg>" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-logo">🏢</span>
+      <span class="brand-name">피클 합동 비서실</span>
+      <button class="room-chip" id="roomChip" title="방 이름 바꾸기">
+        <span id="roomChipName">우리 사무실</span>
+        <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M4 20h4l10-10-4-4L4 16v4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    <div class="top-actions">
+      <span class="conn-pill" id="connPill" data-state="connecting"><i></i><span id="connText">연결 중…</span></span>
+      <button class="icon-btn" id="themeBtn" aria-label="낮/밤 바꾸기" title="낮/밤">🌙</button>
+      <button class="icon-btn" id="settingsBtn" aria-label="설정" title="설정">⚙️</button>
+      <button class="btn primary" id="inviteBtn" aria-label="피클 초대하기">
+        <span class="btn-ico">👥</span><span class="btn-label">피클 초대하기</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- ───────────── 사무실 ───────────── -->
+    <section class="stage-wrap" id="stageWrap" aria-label="사무실">
+      <div class="stage" id="stage">
+
+        <svg class="room-svg" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <!-- 벽 -->
+          <rect class="wall" x="30" y="-10" width="940" height="236" rx="20"/>
+          <rect class="wall-stripe" x="30" y="200" width="940" height="26"/>
+          <rect class="wall-base" x="30" y="222" width="940" height="8" rx="4"/>
+
+          <!-- 바닥 -->
+          <rect class="floor" x="30" y="230" width="940" height="366" rx="18"/>
+          <g class="floor-lines">
+            <path d="M30 268h940M30 316h940M30 378h940M30 456h940M30 552h940" />
+          </g>
+          <g class="floor-joints">
+            <path d="M120 230v38M300 230v38M480 230v38M660 230v38M840 230v38
+                     M200 268v48M420 268v48M640 268v48M860 268v48
+                     M90 316v62M340 316v62M600 316v62M840 316v62
+                     M180 378v78M470 378v78M760 378v78
+                     M120 456v96M520 456v96M860 456v96"/>
+          </g>
+          <rect class="floor-glow" x="30" y="230" width="940" height="70"/>
+
+          <!-- 천장 조명 -->
+          <g class="pendant">
+            <path d="M210 0v54" /><rect x="176" y="50" width="68" height="16" rx="8"/>
+            <ellipse class="lamp-glow" cx="210" cy="74" rx="54" ry="14"/>
+          </g>
+
+          <!-- ═══ 작업실 (30–352) ═══ -->
+          <g class="zone-work">
+            <!-- 창문 -->
+            <g class="window">
+              <rect x="62" y="52" width="146" height="118" rx="14"/>
+              <rect class="glass" x="70" y="60" width="130" height="102" rx="9"/>
+              <path class="mullion" d="M135 60v102M70 111h130"/>
+              <circle class="sun" cx="112" cy="88" r="12"/>
+              <path class="cloud" d="M152 92a10 10 0 0 1 18 4 8 8 0 0 1 2 15h-24a9 9 0 0 1 4-19z"/>
+              <rect class="sill" x="56" y="168" width="158" height="10" rx="5"/>
+            </g>
+            <!-- 선반 -->
+            <g class="shelf">
+              <rect x="234" y="64" width="100" height="12" rx="4"/>
+              <rect class="book" x="242" y="34" width="10" height="30" rx="2"/>
+              <rect class="book b2" x="254" y="28" width="9" height="36" rx="2"/>
+              <rect class="book b3" x="265" y="38" width="11" height="26" rx="2"/>
+              <ellipse class="pot" cx="302" cy="52" rx="14" ry="11"/>
+              <path class="leaf" d="M302 42c-2-10 4-16 10-18-1 9-4 15-10 18z"/>
+              <path class="leaf" d="M300 44c-8-6-16-4-20 2 7 4 15 3 20-2z"/>
+            </g>
+            <!-- 책상 1 -->
+            <g class="desk d1">
+              <rect class="desk-top" x="62" y="300" width="132" height="16" rx="6"/>
+              <rect class="desk-leg" x="70" y="316" width="8" height="60" rx="4"/>
+              <rect class="desk-leg" x="178" y="316" width="8" height="60" rx="4"/>
+              <rect class="monitor" x="96" y="250" width="66" height="44" rx="6"/>
+              <rect class="screen" x="101" y="255" width="56" height="34" rx="3"/>
+              <rect class="monitor-foot" x="122" y="294" width="14" height="7" rx="2"/>
+              <rect class="keyboard" x="104" y="288" width="46" height="7" rx="3"/>
+              <rect class="mug" x="164" y="283" width="13" height="14" rx="4"/>
+              <rect class="paper" x="66" y="288" width="22" height="10" rx="2" transform="rotate(-7 77 293)"/>
+            </g>
+            <!-- 의자 1 -->
+            <g class="chair c1">
+              <rect class="chair-back" x="92" y="368" width="50" height="44" rx="16"/>
+              <rect class="chair-seat" x="88" y="406" width="58" height="12" rx="6"/>
+              <path class="chair-legs" d="M96 418v18M138 418v18"/>
+            </g>
+            <!-- 책상 2 -->
+            <g class="desk d2">
+              <rect class="desk-top" x="224" y="330" width="112" height="14" rx="6"/>
+              <rect class="desk-leg" x="232" y="344" width="7" height="52" rx="3"/>
+              <rect class="desk-leg" x="322" y="344" width="7" height="52" rx="3"/>
+              <rect class="monitor" x="252" y="288" width="58" height="38" rx="5"/>
+              <rect class="screen s2" x="256" y="292" width="50" height="30" rx="3"/>
+              <rect class="monitor-foot" x="274" y="326" width="12" height="6" rx="2"/>
+            </g>
+            <g class="chair c2">
+              <rect class="chair-back" x="252" y="392" width="44" height="40" rx="14"/>
+              <rect class="chair-seat" x="248" y="426" width="52" height="11" rx="5"/>
+              <path class="chair-legs" d="M256 437v16M292 437v16"/>
+            </g>
+            <!-- 스탠드 -->
+            <g class="lamp">
+              <path class="lamp-arm" d="M330 470v-96h14"/>
+              <path class="lamp-shade" d="M330 366l28-16 10 22z"/>
+              <ellipse class="lamp-glow" cx="352" cy="382" rx="26" ry="12"/>
+              <ellipse class="lamp-base" cx="330" cy="472" rx="16" ry="5"/>
+            </g>
+            <!-- 화분 -->
+            <g class="plant p1">
+              <ellipse class="pot" cx="52" cy="486" rx="20" ry="22"/>
+              <path class="stem" d="M52 472v-40"/>
+              <ellipse class="leaf" cx="38" cy="432" rx="17" ry="10" transform="rotate(-28 38 432)"/>
+              <ellipse class="leaf" cx="66" cy="424" rx="17" ry="10" transform="rotate(24 66 424)"/>
+              <ellipse class="leaf" cx="52" cy="404" rx="13" ry="17" transform="rotate(-4 52 404)"/>
+            </g>
+            <!-- 메모 -->
+            <g class="notes">
+              <rect class="note" x="266" y="216" width="34" height="26" rx="3" transform="rotate(-5 283 229)"/>
+              <rect class="note n2" x="304" y="220" width="30" height="24" rx="3" transform="rotate(4 319 232)"/>
+            </g>
+          </g>
+
+          <!-- ═══ 회의실 (352–664) ═══ -->
+          <g class="zone-meet">
+            <g class="whiteboard">
+              <rect x="382" y="46" width="240" height="132" rx="8"/>
+              <rect class="board-in" x="390" y="54" width="224" height="116" rx="4"/>
+              <path class="scribble" d="M406 92h64M406 112h96M406 132h48"/>
+              <path class="scribble s2" d="M520 92h60M520 112h42"/>
+              <circle class="dot d1" cx="404" cy="78" r="5"/>
+              <circle class="dot d2" cx="418" cy="78" r="5"/>
+              <circle class="dot d3" cx="432" cy="78" r="5"/>
+              <rect class="board-tray" x="470" y="176" width="64" height="6" rx="3"/>
+            </g>
+            <g class="pendant p2">
+              <path d="M504 0v40"/><rect x="474" y="36" width="60" height="14" rx="7"/>
+              <ellipse class="lamp-glow" cx="504" cy="58" rx="46" ry="12"/>
+            </g>
+            <!-- 회의 테이블 -->
+            <g class="mtable">
+              <ellipse class="table-shadow" cx="504" cy="452" rx="128" ry="52"/>
+              <ellipse class="table-top" cx="504" cy="436" rx="122" ry="48"/>
+              <ellipse class="table-in" cx="504" cy="432" rx="112" ry="40"/>
+              <g class="chairs">
+                <rect class="chair-back" x="430" y="366" width="46" height="38" rx="13"/>
+                <rect class="chair-back" x="536" y="366" width="46" height="38" rx="13"/>
+                <rect class="chair-back" x="404" y="470" width="46" height="34" rx="13"/>
+                <rect class="chair-back" x="558" y="470" width="46" height="34" rx="13"/>
+              </g>
+              <rect class="laptop" x="482" y="404" width="46" height="28" rx="4"/>
+              <rect class="laptop-screen" x="486" y="407" width="38" height="20" rx="2"/>
+              <rect class="mug" x="446" y="418" width="12" height="13" rx="4"/>
+              <rect class="mug m2" x="548" y="424" width="12" height="13" rx="4"/>
+              <rect class="paper" x="520" y="414" width="24" height="11" rx="2" transform="rotate(6 532 419)"/>
+              <rect class="paper" x="452" y="436" width="22" height="10" rx="2" transform="rotate(-8 463 441)"/>
+            </g>
+            <g class="plant p2">
+              <ellipse class="pot" cx="628" cy="368" rx="16" ry="18"/>
+              <path class="stem" d="M628 356v-32"/>
+              <ellipse class="leaf" cx="616" cy="322" rx="14" ry="8" transform="rotate(-26 616 322)"/>
+              <ellipse class="leaf" cx="640" cy="314" rx="14" ry="8" transform="rotate(22 640 314)"/>
+              <ellipse class="leaf" cx="628" cy="298" rx="10" ry="14"/>
+            </g>
+          </g>
+
+          <!-- ═══ 라운지 (664–970) ═══ -->
+          <g class="zone-lounge">
+            <g class="frame">
+              <rect x="700" y="52" width="104" height="86" rx="6"/>
+              <rect class="art" x="708" y="60" width="88" height="70" rx="3"/>
+              <circle class="art-sun" cx="736" cy="82" r="10"/>
+              <path class="art-hill" d="M708 118l24-26 18 14 16-20 30 32z"/>
+            </g>
+            <g class="clock">
+              <circle class="clock-face" cx="880" cy="92" r="27"/>
+              <path class="clock-hand" d="M880 92v-15M880 92l10 7"/>
+              <circle class="clock-pin" cx="880" cy="92" r="3"/>
+            </g>
+            <g class="pendant p3">
+              <path d="M818 0v44"/><rect x="790" y="40" width="56" height="13" rx="6"/>
+              <ellipse class="lamp-glow" cx="818" cy="60" rx="42" ry="11"/>
+            </g>
+            <!-- 커피 스테이션 -->
+            <g class="station">
+              <rect class="cabinet" x="906" y="212" width="56" height="82" rx="8"/>
+              <rect class="machine" x="912" y="222" width="44" height="40" rx="6"/>
+              <rect class="machine-slot" x="920" y="230" width="28" height="8" rx="3"/>
+              <circle class="machine-dot" cx="932" cy="252" r="4"/>
+              <rect class="cup" x="924" y="266" width="8" height="8" rx="2"/>
+              <rect class="cup c2" x="936" y="266" width="8" height="8" rx="2"/>
+            </g>
+            <!-- 러그 + 소파 -->
+            <ellipse class="rug" cx="800" cy="486" rx="138" ry="46"/>
+            <g class="sofa">
+              <rect class="sofa-back" x="694" y="330" width="178" height="62" rx="18"/>
+              <rect class="sofa-arm" x="686" y="352" width="26" height="72" rx="12"/>
+              <rect class="sofa-arm" x="854" y="352" width="26" height="72" rx="12"/>
+              <rect class="sofa-seat" x="708" y="366" width="150" height="52" rx="14"/>
+              <path class="sofa-line" d="M783 372v40"/>
+              <rect class="cushion" x="716" y="344" width="34" height="28" rx="10" transform="rotate(-8 733 358)"/>
+              <rect class="cushion c2" x="818" y="346" width="32" height="26" rx="10" transform="rotate(7 834 359)"/>
+            </g>
+            <!-- 커피 테이블 -->
+            <g class="ctable">
+              <rect class="ctable-top" x="734" y="428" width="132" height="12" rx="6"/>
+              <path class="ctable-legs" d="M744 440v22M856 440v22"/>
+              <rect class="book b1" x="748" y="414" width="34" height="12" rx="2" transform="rotate(-4 765 420)"/>
+              <rect class="book b2" x="752" y="408" width="28" height="9" rx="2" transform="rotate(3 766 412)"/>
+              <rect class="mug" x="812" y="412" width="13" height="14" rx="4"/>
+              <circle class="plate" cx="842" cy="419" r="9"/>
+            </g>
+            <g class="plant p3">
+              <ellipse class="pot" cx="948" cy="470" rx="19" ry="21"/>
+              <path class="stem" d="M948 452v-34"/>
+              <ellipse class="leaf" cx="932" cy="416" rx="16" ry="9" transform="rotate(-30 932 416)"/>
+              <ellipse class="leaf" cx="964" cy="408" rx="16" ry="9" transform="rotate(26 964 408)"/>
+              <ellipse class="leaf" cx="948" cy="390" rx="11" ry="15"/>
+            </g>
+          </g>
+
+          <!-- 벽 사이 구분 낮은 벽 -->
+          <g class="divider">
+            <rect x="344" y="252" width="14" height="196" rx="7"/>
+            <rect class="divider-top" x="340" y="248" width="22" height="12" rx="6"/>
+            <rect x="656" y="252" width="14" height="196" rx="7"/>
+            <rect class="divider-top" x="652" y="248" width="22" height="12" rx="6"/>
+          </g>
+
+          <!-- 존 라벨 (누르면 내 피클이 그 구역으로 이동) -->
+          <g class="zone-label" data-zone="work">
+            <rect x="46" y="238" width="70" height="24" rx="12"/>
+            <text x="81" y="255">작업실</text>
+          </g>
+          <g class="zone-label" data-zone="meet">
+            <rect x="366" y="238" width="70" height="24" rx="12"/>
+            <text x="401" y="255">회의실</text>
+          </g>
+          <g class="zone-label" data-zone="lounge">
+            <rect x="678" y="238" width="64" height="24" rx="12"/>
+            <text x="710" y="255">라운지</text>
+          </g>
+        </svg>
+
+        <div class="avatar-layer" id="avatarLayer"></div>
+
+        <div class="stage-hint" id="stageHint">
+          <span class="hint-ico">💡</span>
+          <span id="stageHintText">아바타를 눌러 인사해 보세요 · 친구 피클은 오른쪽 위 <b>👥 피클 초대하기</b>로 불러요</span>
+          <button class="hint-x" id="hintClose" aria-label="안내 닫기">×</button>
+        </div>
+
+        <div class="room-badge">
+          <span class="live-dot" id="liveDot"></span>
+          <span id="badgeText">크리 혼자 있는 중</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── 사이드 패널 ───────────── -->
+    <aside class="side">
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-tab="chat" role="tab">💬 채팅 <span class="tab-dot" id="chatDot" hidden></span></button>
+        <button class="tab" data-tab="board" role="tab">📋 업무 보드</button>
+        <button class="tab" data-tab="members" role="tab">👥 멤버</button>
+      </nav>
+
+      <!-- 채팅 -->
+      <section class="panel active" id="panel-chat">
+        <div class="panel-head">
+          <div>
+            <h2>같이 하는 대화</h2>
+            <p id="chatSub">크리 혼자 · 초대하면 같이 써요</p>
+          </div>
+          <button class="mini-btn" id="chatInviteMini">＋ 초대</button>
+        </div>
+        <div class="msglist" id="msgList" aria-live="polite"></div>
+        <button class="new-msg" id="newMsgChip" hidden>↓ 새 메시지</button>
+        <form class="composer" id="chatForm" autocomplete="off">
+          <div class="emoji-row" id="emojiRow">
+            <button type="button" data-e="😊">😊</button>
+            <button type="button" data-e="👍">👍</button>
+            <button type="button" data-e="☕">☕</button>
+            <button type="button" data-e="✅">✅</button>
+            <button type="button" data-e="🙌">🙌</button>
+            <button type="button" data-e="✨">✨</button>
+          </div>
+          <div class="input-row">
+            <textarea id="chatInput" rows="1" placeholder="메시지… (@이름 으로 부르기)" aria-label="메시지 입력"></textarea>
+            <button class="send-btn" type="submit" aria-label="보내기">
+              <svg viewBox="0 0 24 24" width="18" height="18"><path d="M3.4 20.4l17.4-8.4L3.4 3.6 3.3 10l12 2-12 2z" fill="currentColor"/></svg>
+            </button>
+          </div>
+          <div class="mention-pop" id="mentionPop" hidden></div>
+          <div class="typing-line" id="typingLine" hidden></div>
+        </form>
+      </section>
+
+      <!-- 업무 보드 -->
+      <section class="panel" id="panel-board">
+        <div class="panel-head">
+          <div>
+            <h2>업무 보드</h2>
+            <p id="boardSub">오늘의 할 일을 같이 나눠요</p>
+          </div>
+          <span class="progress-pill" id="progressPill">0 / 0</span>
+        </div>
+        <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+        <form class="task-form" id="taskForm" autocomplete="off">
+          <input id="taskInput" type="text" placeholder="할 일을 적어 주세요" maxlength="90" aria-label="할 일" />
+          <select id="taskAssignee" aria-label="담당"></select>
+          <button class="add-btn" type="submit" aria-label="추가">＋</button>
+        </form>
+        <div class="tasklist" id="taskList"></div>
+      </section>
+
+      <!-- 멤버 -->
+      <section class="panel" id="panel-members">
+        <div class="panel-head">
+          <div>
+            <h2>이 사무실의 피클</h2>
+            <p id="membersSub">지금 1명</p>
+          </div>
+          <button class="mini-btn" id="membersInviteMini">＋ 초대</button>
+        </div>
+        <div class="members-scroll">
+          <div class="member-list" id="memberList"></div>
+
+          <div class="card invite-card">
+            <div class="ic-emoji">💌</div>
+            <h3>다른 피클도 부를까요?</h3>
+            <p>링크 하나만 보내면 친구 피클이 이 사무실로 들어와요. 로그인은 필요 없어요.</p>
+            <button class="btn primary wide" id="inviteCardBtn">👥 초대 링크 만들기</button>
+          </div>
+
+          <div class="card">
+            <h3>방 정보</h3>
+            <label class="field">
+              <span>방 이름</span>
+              <input id="roomNameInput" type="text" maxlength="24" placeholder="우리 사무실" />
+            </label>
+            <div class="room-code-row">
+              <span class="lbl">방 코드</span>
+              <code id="roomCodeSmall">lobby</code>
+              <button class="mini-btn" id="copyCodeBtn">복사</button>
+            </div>
+          </div>
+
+          <div class="card tip-card">
+            <h3>이렇게 써 보세요</h3>
+            <ul>
+              <li>업무 보드에 할 일을 적고 <b>@이름</b>으로 담당을 정해요.</li>
+              <li>채팅에서 <b>@크리</b>처럼 부르면 그 피클에게 말이 가요.</li>
+              <li>아바타를 누르면 그 피클에게 바로 말을 걸 수 있어요.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </main>
+</div>
+
+<!-- ───────────── 모달: 초대 ───────────── -->
+<div class="modal-backdrop" id="modalInvite" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="inviteTitle">
+    <button class="modal-x" data-close aria-label="닫기">×</button>
+    <div class="modal-emoji">👥</div>
+    <h2 id="inviteTitle">피클 초대하기</h2>
+    <p class="modal-sub">아래 링크를 친구 피클(또는 다른 폰)에게 보내면, 링크만 열어도 바로 들어와요.</p>
+
+    <div class="link-box">
+      <input id="inviteUrl" type="text" readonly aria-label="초대 링크" />
+      <button class="mini-btn solid" id="copyUrlBtn">복사</button>
+    </div>
+
+    <div class="room-code-big">
+      <span>방 코드</span>
+      <strong id="roomCodeBig">lobby</strong>
+    </div>
+
+    <button class="btn primary wide" id="copyMsgBtn">💬 초대 문구 복사하기</button>
+
+    <ol class="steps">
+      <li><span class="step-n">1</span><div><b>링크 보내기</b><p>카카오톡·문자·스레드 어디로든 링크를 보내요.</p></div></li>
+      <li><span class="step-n">2</span><div><b>내 피클 정하기</b><p>링크를 연 사람은 이름·자음·색만 고르면 끝.</p></div></li>
+      <li><span class="step-n">3</span><div><b>같이 일하기</b><p>채팅·업무 보드·사무실이 실시간으로 함께 움직여요.</p></div></li>
+    </ol>
+
+    <p class="modal-note">🔒 로그인 없이 열려요. 대화는 공개 P2P 중계 서버를 거치니, 민감한 내용은 올리지 마세요.</p>
+  </div>
+</div>
+
+<!-- ───────────── 모달: 설정 ───────────── -->
+<div class="modal-backdrop" id="modalSettings" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+    <button class="modal-x" data-close aria-label="닫기">×</button>
+    <h2 id="setTitle">⚙️ 설정</h2>
+
+    <div class="set-block">
+      <h3>내 피클</h3>
+      <label class="field">
+        <span>이름</span>
+        <input id="setName" type="text" maxlength="10" placeholder="크리" />
+      </label>
+      <div class="field">
+        <span>자음</span>
+        <div class="chip-row" id="initialChips"></div>
+      </div>
+      <div class="field">
+        <span>색</span>
+        <div class="swatch-row" id="colorSwatches"></div>
+      </div>
+      <div class="me-preview">
+        <div class="critter-mini" id="mePreview"><span id="mePreviewLetter">ㅋ</span></div>
+        <span id="mePreviewName">크리</span>
+      </div>
+    </div>
+
+    <div class="set-block">
+      <h3>실시간 연결</h3>
+      <label class="field">
+        <span>방식</span>
+        <select id="setConn">
+          <option value="auto">자동 (P2P · 권장)</option>
+          <option value="local">이 브라우저에서만</option>
+          <option value="firebase">Firebase RTDB (직접 입력)</option>
+        </select>
+      </label>
+      <label class="field" id="fbField" hidden>
+        <span>Realtime Database URL</span>
+        <input id="setFirebase" type="url" placeholder="https://xxx-default-rtdb.firebaseio.com" />
+      </label>
+      <p class="field-help">자동 모드는 로그인 없이 P2P로 연결돼요. Firebase를 쓰려면 보안 규칙에서 읽기/쓰기를 열어 둔 DB URL이 필요해요.</p>
+    </div>
+
+    <div class="set-block">
+      <h3>사무실</h3>
+      <label class="field">
+        <span>테마</span>
+        <select id="setTheme">
+          <option value="light">낮 ☀️</option>
+          <option value="dark">밤 🌙</option>
+        </select>
+      </label>
+      <button class="btn ghost wide" id="resetDataBtn">이 기기의 기록 지우기</button>
+    </div>
+
+    <button class="btn primary wide" id="saveSettings">저장</button>
+  </div>
+</div>
+
+<!-- ───────────── 모달: 내 피클 첫 설정 ───────────── -->
+<div class="modal-backdrop" id="modalProfile" hidden>
+  <div class="modal narrow" role="dialog" aria-modal="true" aria-labelledby="profTitle">
+    <div class="modal-emoji">✨</div>
+    <h2 id="profTitle">사무실에 들어왔어요!</h2>
+    <p class="modal-sub">내 피클을 소개해 주세요. 나중에 설정에서 바꿀 수 있어요.</p>
+
+    <label class="field">
+      <span>이름</span>
+      <input id="profName" type="text" maxlength="10" placeholder="크리" />
+    </label>
+    <div class="field">
+      <span>자음</span>
+      <div class="chip-row" id="profChips"></div>
+    </div>
+    <div class="field">
+      <span>색</span>
+      <div class="swatch-row" id="profSwatches"></div>
+    </div>
+    <div class="me-preview big">
+      <div class="critter-mini" id="profPreview"><span id="profPreviewLetter">ㅋ</span></div>
+      <span id="profPreviewName">크리</span>
+    </div>
+    <button class="btn primary wide" id="profDone">이 사무실로 들어가기</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js" defer></script>
+<script src="assets/app.js" defer></script>
+</body>
+</html>
