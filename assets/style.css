@@ -75,6 +75,7 @@ html[data-theme="dark"]{
 }
 
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{height:100%}
 body{
   margin:0;
