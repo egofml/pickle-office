@@ -125,20 +125,21 @@
     const w = stageWrap.clientWidth, h = stageWrap.clientHeight;
     if (!w || !h) return;
     const ratio = w / h;
-    let s, tx = 0;
+    let s, tx = 0, ty = 0;
     if (ratio >= 1.15) {
       s = Math.min(w / 1000, h / 620);
     } else {
       // 좁은 화면: 방을 크게 보여 주고 내 피클 구역을 따라간다
-      const viewH = 500;
+      const viewH = 560;
       s = Math.min(h / viewH, w / 640);
       const half = (w / s) / 2;
       const z = ZONES[app.me.zone] || ZONES.work;
       const cx = (z.x[0] + z.x[1]) / 2;
       const centerX = clamp(cx, half + 26, 986 - half);
       tx = (500 - centerX) * s;
+      ty = -(340 - 310) * s;
     }
-    stage.style.transform = `translate(calc(-50% + ${tx.toFixed(1)}px), -50%) scale(${s.toFixed(4)})`;
+    stage.style.transform = `translate(calc(-50% + ${tx.toFixed(1)}px), calc(-50% + ${ty.toFixed(1)}px)) scale(${s.toFixed(4)})`;
     stage.dataset.scale = s;
     stage.dataset.tx = tx;
   }

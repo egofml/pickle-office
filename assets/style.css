@@ -511,7 +511,7 @@ mark.mention{
   font-size:11.5px;font-weight:700;padding:5px 12px;border-radius:999px;
   margin:0 auto 6px;box-shadow:0 6px 14px -8px #00000080;
 }
-.composer{flex:0 0 auto;border-top:1px solid var(--line);padding:8px 12px 10px;position:relative;background:var(--surface)}
+.composer{flex:0 0 auto;border-top:1px solid var(--line);padding:8px 12px max(10px, env(safe-area-inset-bottom));position:relative;background:var(--surface)}
 .emoji-row{display:flex;gap:3px;margin-bottom:6px;overflow-x:auto;scrollbar-width:none}
 .emoji-row::-webkit-scrollbar{display:none}
 .emoji-row button{border:0;background:transparent;font-size:15px;opacity:.65;padding:2px 4px;border-radius:8px}
