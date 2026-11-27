@@ -7,7 +7,7 @@
 <meta name="description" content="피클들이 함께 일하는 귀여운 2D 합동 비서실 — 같이 채팅하고, 업무를 나누고, 다른 피클을 초대해요." />
 <meta name="theme-color" content="#f6f2ec" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏢</text></svg>" />
-<link rel="stylesheet" href="assets/style.css?v=6" />
+<link rel="stylesheet" href="assets/style.css?v=7" />
 </head>
 <body>
 
@@ -425,7 +425,7 @@
       <li><span class="step-n">3</span><div><b>같이 일하기</b><p>채팅·업무 보드·사무실이 실시간으로 함께 움직여요.</p></div></li>
     </ol>
 
-    <p class="modal-note">🔒 로그인 없이 열려요. 대화는 공개 P2P 중계 서버를 거치니, 민감한 내용은 올리지 마세요.</p>
+    <p class="modal-note">🔒 로그인 없이 열려요. 대화는 공개 중계 서버를 거치니, 민감한 내용은 올리지 마세요.</p>
   </div>
 </div>
 
@@ -460,7 +460,7 @@
       <label class="field">
         <span>방식</span>
         <select id="setConn">
-          <option value="auto">자동 (P2P · 권장)</option>
+          <option value="auto">자동 (실시간 · 권장)</option>
           <option value="local">이 브라우저에서만</option>
           <option value="firebase">Firebase RTDB (직접 입력)</option>
         </select>
@@ -469,7 +469,7 @@
         <span>Realtime Database URL</span>
         <input id="setFirebase" type="url" placeholder="https://xxx-default-rtdb.firebaseio.com" />
       </label>
-      <p class="field-help">자동 모드는 로그인 없이 P2P로 연결돼요. Firebase를 쓰려면 보안 규칙에서 읽기/쓰기를 열어 둔 DB URL이 필요해요.</p>
+      <p class="field-help">자동 모드는 로그인 없이 공개 중계 서버로 바로 연결돼요. Firebase를 쓰려면 보안 규칙에서 읽기/쓰기를 열어 둔 DB URL이 필요해요.</p>
     </div>
 
     <div class="set-block">
@@ -517,7 +517,7 @@
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js" defer></script>
-<script src="assets/app.js?v=6" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js" defer></script>
+<script src="assets/app.js?v=7" defer></script>
 </body>
 </html>

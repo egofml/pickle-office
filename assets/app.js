@@ -47,8 +47,16 @@
   /* ───────── 상태 ───────── */
   const params = new URLSearchParams(location.search);
   const roomFromUrl = (params.get('room') || '').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 20);
-  const room = roomFromUrl || LS.get('po:room', '') || 'lobby';
+  const newRoomCode = () => 'office-' + Math.random().toString(36).slice(2, 7);
+  const room = roomFromUrl || LS.get('po:room', '') || newRoomCode();
   LS.set('po:room', room);
+  if (!roomFromUrl) {
+    try {
+      const u = new URL(location.href);
+      u.searchParams.set('room', room);
+      history.replaceState(null, '', u.toString());
+    } catch {}
+  }
 
   const savedIdentity = LS.get('po:identity', null);
   const firstVisit = !savedIdentity;
@@ -184,146 +192,65 @@
   /* ───────── 동기화 ───────── */
   const Net = {
     bc: null,
-    peer: null,
-    hubConn: null,
-    conns: new Set(),
-    isHub: false,
-    hubId: '',
-    alive: false,
+    client: null,
+    topic: '',
     fbBase: '',
     fbTimer: null,
     fbPushTimer: null,
-    typingTimer: null,
     lastTypingSent: 0,
+    lastSnapshot: 0,
 
     start() {
       this.stop();
       try {
         this.bc = new BroadcastChannel('pickle-office:' + app.room);
-        this.bc.onmessage = e => this.receive(e.data, 'bc');
+        this.bc.onmessage = e => this.receive(e.data);
       } catch {}
       if (app.connection === 'local') { setConn('local', '이 브라우저에서만'); return; }
       if (app.connection === 'firebase') { this.startFirebase(); return; }
-      this.startP2P();
+      this.startStream();
     },
+
+    restart() { this.stop(); this.start(); },
 
     stop() {
       if (this.bc) { try { this.bc.close(); } catch {} this.bc = null; }
-      if (this.peer) { try { this.peer.destroy(); } catch {} this.peer = null; }
+      if (this.client) { try { this.client.end(true); } catch {} this.client = null; }
       if (this.fbTimer) { clearInterval(this.fbTimer); this.fbTimer = null; }
-      this.conns.clear(); this.hubConn = null; this.isHub = false; this.alive = false;
     },
 
-    /* ---- P2P (PeerJS, 로그인 불필요) ---- */
-    startP2P() {
-      if (typeof Peer === 'undefined') { setConn('local', '중계 서버를 못 불러왔어요'); return; }
+    /* ---- 공개 MQTT 브로커(WebSocket)로 방 단위 실시간 공유, 로그인 없음 ---- */
+    startStream() {
+      if (typeof mqtt === 'undefined') { setConn('local', '실시간 연결을 못 불러왔어요'); return; }
       setConn('connecting', '연결 중…');
-      this.hubId = 'po-' + hash(app.room) + '-hub';
-      this.openGuestPeer();
-    },
-
-    // 손님용 피어를 열고 방(허브)에 붙어 본다. 실패하면 내가 방을 연다.
-    openGuestPeer() {
-      const self = this;
-      let peer;
-      try { peer = new Peer({ debug: 0 }); } catch { setConn('local', '연결이 안 돼 로컬로 저장 중'); return; }
-      this.peer = peer;
-      let opened = false;
-      const bootTimer = setTimeout(() => {
-        if (peer === self.peer && !opened) self.becomeHub();
-      }, 6000);
-
-      peer.on('open', () => {
-        opened = true;
-        clearTimeout(bootTimer);
-        if (peer !== self.peer) return;
-        self.tryJoin();
-      });
-      peer.on('error', () => {
-        if (peer !== self.peer) return;
-        clearTimeout(bootTimer);
-        setTimeout(() => { if (peer === self.peer && !self.hubConn) self.becomeHub(); }, 400);
-      });
-    },
-
-    tryJoin() {
-      const self = this;
-      if (!this.peer || this.peer.destroyed) return;
-      let conn;
+      this.topic = 'pickleoffice/v1/' + hash(app.room);
+      let client;
       try {
-        conn = this.peer.connect(this.hubId, { reliable: true, serialization: 'json' });
-      } catch { return this.becomeHub(); }
-      let opened = false;
-      const timer = setTimeout(() => {
-        if (opened) return;
-        try { conn.close(); } catch {}
-        if (conn === self.hubConn) self.hubConn = null;
-        self.becomeHub();
-      }, 4500);
-
-      conn.on('open', () => {
-        opened = true;
-        clearTimeout(timer);
-        self.hubConn = conn;
-        self.isHub = false;
-        self.alive = true;
-        setConn('online', '친구 피클과 연결됨');
-        try { conn.send({ t: 'hello', member: selfMember(), state: snapshot() }); } catch {}
-      });
-      conn.on('data', d => self.receive(d));
-      conn.on('close', () => {
-        if (self.hubConn === conn) {
-          self.hubConn = null; self.alive = false;
-          setConn('connecting', '다시 연결하는 중…');
-          setTimeout(() => { if (!self.hubConn && app.connection === 'auto') self.restart(); }, 1800);
-        }
-      });
-      conn.on('error', () => {
-        if (opened) return;
-        clearTimeout(timer);
-      });
-    },
-
-    becomeHub() {
-      const self = this;
-      if (self.peer) { try { self.peer.destroy(); } catch {} self.peer = null; }
-      let peer;
-      try { peer = new Peer(self.hubId, { debug: 0 }); } catch { setConn('local', '연결이 안 돼 로컬로 저장 중'); return; }
-      self.peer = peer;
-
-      peer.on('open', () => {
-        if (peer !== self.peer) return;
-        self.isHub = true; self.alive = true;
-        setConn('online', '방을 열었어요 · 친구를 기다리는 중');
-      });
-      peer.on('connection', conn => {
-        if (peer !== self.peer) { try { conn.close(); } catch {} return; }
-        self.conns.add(conn);
-        conn.on('open', () => {
-          try { conn.send({ t: 'snapshot', state: snapshot() }); } catch {}
+        client = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
+          clientId: 'po_' + Math.random().toString(16).slice(2, 10),
+          keepalive: 30,
+          clean: true,
+          reconnectPeriod: 4000,
+          connectTimeout: 9000
         });
-        conn.on('data', d => { self.receive(d); self.relay(d, conn); });
-        conn.on('close', () => self.conns.delete(conn));
-        conn.on('error', () => self.conns.delete(conn));
-      });
-      peer.on('disconnected', () => { try { peer.reconnect(); } catch {} });
-      peer.on('error', err => {
-        if (peer !== self.peer) return;
-        if (err && err.type === 'unavailable-id') {
-          // 이미 다른 피클이 방을 열고 있어요 → 손님으로 다시 붙기
-          self.isHub = false;
-          try { peer.destroy(); } catch {}
-          self.peer = null;
-          setTimeout(() => { if (app.connection === 'auto') self.openGuestPeer(); }, 900);
-        } else if (err && (err.type === 'network' || err.type === 'server-error')) {
-          setConn('local', '연결이 끊겨 로컬로 저장 중');
-        }
-      });
-    },
+      } catch { setConn('local', '연결이 안 돼 로컬로 저장 중'); return; }
+      this.client = client;
 
-    restart() {
-      this.stop();
-      this.start();
+      client.on('connect', () => {
+        if (this.client !== client) return;
+        setConn('online', '친구 피클과 연결됨');
+        client.subscribe(this.topic, { qos: 0 }, () => {
+          // 들어왔다는 인사 + 지금까지의 상태 공유
+          this.send({ members: [selfMember()], messages: app.messages.slice(-120), tasks: app.tasks });
+          this.send({ hello: app.me.id });
+        });
+      });
+      client.on('message', (topic, payload) => {
+        try { this.receive(JSON.parse(payload.toString())); } catch {}
+      });
+      client.on('reconnect', () => setConn('connecting', '다시 연결하는 중…'));
+      client.on('close', () => setConn('local', '연결이 끊겨 다시 시도 중'));
+      client.on('error', () => { if (this.client === client) setConn('local', '연결이 끊겨 다시 시도 중'); });
     },
 
     /* ---- Firebase RTDB (선택, REST만 사용) ---- */
@@ -337,7 +264,7 @@
           const r = await fetch(this.fbBase + '.json');
           if (!r.ok) throw new Error(r.status);
           const data = await r.json();
-          if (data) { mergeAll(data); }
+          if (data) mergeAll(data);
           setConn('online', 'Firebase 연결됨');
         } catch { setConn('local', 'Firebase 연결 실패 · 로컬 저장 중'); }
       };
@@ -355,7 +282,7 @@
             body: JSON.stringify(snapshot())
           });
         } catch {}
-      }, 1200);
+      }, 900);
     },
 
     /* ---- 보내기 ---- */
@@ -364,44 +291,33 @@
       patch.from = app.me.id;
       if (this.bc) { try { this.bc.postMessage(patch); } catch {} }
       if (app.connection === 'firebase') { this.fbPush(); return; }
-      if (!this.alive) return;
-      if (this.isHub) {
-        this.relay(patch, null);
-      } else if (this.hubConn) {
-        try { this.hubConn.send(patch); } catch {}
-      }
-    },
-    relay(patch, except) {
-      for (const c of this.conns) {
-        if (c === except || !c.open) continue;
-        try { c.send(patch); } catch {}
+      if (this.client && this.client.connected) {
+        try { this.client.publish(this.topic, JSON.stringify(patch), { qos: 0 }); } catch {}
       }
     },
     sayTyping() {
-      if (!this.alive || app.connection !== 'auto') return;
+      if (app.connection !== 'auto') return;
+      if (!this.client || !this.client.connected) return;
       const now = Date.now();
       if (now - this.lastTypingSent < 1400) return;
       this.lastTypingSent = now;
       this.send({ typing: { id: app.me.id, name: app.me.name, at: now } });
     },
     receive(d) {
-      if (!d) return;
-      if (d.t === 'snapshot') { mergeAll(d.state); return; }
-      if (d.t === 'hello') {
-        if (d.member && d.member.id && d.member.id !== app.me.id) {
-          app.members[d.member.id] = Object.assign({}, app.members[d.member.id], d.member, { lastSeen: Date.now() });
-        }
-        mergeAll(d.state);
-        return;
-      }
+      if (!d || typeof d !== 'object') return;
       if (d.t === 'patch') {
         if (d.messages || d.tasks || d.members || d.roomName) mergeAll(d);
-        if (d.typing) showTyping(d.typing);
+        if (d.typing && d.from !== app.me.id) showTyping(d.typing);
+        if (d.hello && d.from !== app.me.id) {
+          setTimeout(() => this.send({ members: [selfMember()], messages: app.messages.slice(-60), tasks: app.tasks }), 300);
+        }
         return;
       }
       if (d.typing) { showTyping(d.typing); return; }
+      mergeAll(d);
     }
   };
+
 
   function hash(s) {
     let h = 2166136261;
