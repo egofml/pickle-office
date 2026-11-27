@@ -745,7 +745,7 @@ html[data-theme="dark"] .toast{background:#f4efff;color:#2a2138}
 @media (max-width:900px){
   .layout{
     grid-template-columns:1fr;
-    grid-template-rows:minmax(240px,46dvh) minmax(0,1fr);
+    grid-template-rows:minmax(250px,50dvh) minmax(0,1fr);
     gap:8px;padding:8px 8px 8px;
   }
   .stage-wrap{border-radius:18px}

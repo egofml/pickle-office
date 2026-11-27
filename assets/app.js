@@ -130,15 +130,13 @@
     if (ratio >= 1.15) {
       s = Math.min(w / 1000, h / 620);
     } else {
-      // 좁은 화면: 방을 크게 보여 주고 내 피클 구역을 따라간다
-      const viewH = 560;
-      s = Math.min(h / viewH, w / 640);
+      // 좁은 화면: 방 전체 높이를 보여 주고, 내 피클 구역을 따라 좌우로 움직인다
+      s = Math.min(h / 620, w / 600);
       const half = (w / s) / 2;
       const z = ZONES[app.me.zone] || ZONES.work;
       const cx = (z.x[0] + z.x[1]) / 2;
-      const centerX = clamp(cx, half + 26, 986 - half);
+      const centerX = clamp(cx, half + 20, 990 - half);
       tx = (500 - centerX) * s;
-      ty = -(340 - 310) * s;
     }
     stage.style.transform = `translate(calc(-50% + ${tx.toFixed(1)}px), calc(-50% + ${ty.toFixed(1)}px)) scale(${s.toFixed(4)})`;
     stage.dataset.scale = s;
@@ -789,7 +787,7 @@
       if (d < 1.5) {
         a.el.classList.remove('walking');
         a.pause = rand(1.4, 5.5);
-        if (Math.random() < 0.4) autoBubble(a);
+        if (Math.random() < 0.28) autoBubble(a);
         pickTarget(a);
         continue;
       }
@@ -821,6 +819,11 @@
   }
 
   function autoBubble(a) {
+    // 여러 피클이 동시에 말풍선을 띄우면 정신없어서, 한 번에 하나만
+    for (const other of actors.values()) {
+      const b = other.el.querySelector('.c-bubble');
+      if (b && b.classList.contains('show')) return;
+    }
     const pool = BUBBLES[a.zone] || BUBBLES.work;
     bubbleText(a, pool[Math.floor(Math.random() * pool.length)]);
   }
