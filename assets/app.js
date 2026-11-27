@@ -614,8 +614,8 @@
       return;
     }
     list.innerHTML = '';
-    live.sort((a, b) => (a.done ? 1 : 0) - (b.done ? 1 : 0) || (a.at || 0) - (b.at || 0));
-    live.forEach(t => {
+    const sorted = live.slice().sort((a, b) => (a.done ? 1 : 0) - (b.done ? 1 : 0) || (a.at || 0) - (b.at || 0));
+    sorted.forEach(t => {
       const el = document.createElement('div');
       el.className = 'task' + (t.done ? ' done' : '');
       el.dataset.id = t.id;

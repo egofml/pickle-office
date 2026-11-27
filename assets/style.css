@@ -567,7 +567,7 @@ mark.mention{
 .task{
   display:flex;align-items:flex-start;gap:9px;padding:10px 11px;border-radius:14px;
   background:var(--surface-2);border:1px solid transparent;transition:.15s;
-  animation:pop .2s ease;
+  animation:pop .2s ease;flex-wrap:wrap;
 }
 .task:hover{border-color:var(--line)}
 .task .check{
@@ -576,9 +576,9 @@ mark.mention{
   color:#fff;font-size:11px;transition:.15s;
 }
 .task.done .check{background:var(--ok);border-color:var(--ok)}
-.task-text{flex:1;min-width:0;font-size:13px;line-height:1.45;word-break:break-word}
+.task-text{flex:1 1 60%;min-width:0;font-size:13px;line-height:1.45;word-break:break-word}
 .task.done .task-text{color:var(--muted);text-decoration:line-through}
-.task-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.task-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;flex:0 0 100%;padding-left:28px;order:9}
 .assignee{
   font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:999px;
   background:#fff;color:#5c4f5f;display:inline-flex;align-items:center;gap:4px;
