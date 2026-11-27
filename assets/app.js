@@ -706,10 +706,10 @@
     const y = (e.clientY - rect.top) * k;
     let best = null, bd = 1e9;
     for (const a of actors.values()) {
-      const d = Math.hypot(a.x - x, (a.y - y) * 1.35);
+      const d = Math.hypot(a.x - x, (a.y - 38) - y);
       if (d < bd) { bd = d; best = a; }
     }
-    if (!best || bd > 44) return;
+    if (!best || bd > 50) return;
     const now = Date.now();
     if (now - lastPokeAt < 350) return;
     lastPokeAt = now;
