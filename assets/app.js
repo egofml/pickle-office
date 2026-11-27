@@ -28,9 +28,9 @@
   const INITIALS = ['ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
   const COLORS = ['#e8d5b5','#ffc9a3','#f6c2c8','#bfe0c8','#bfd9f2','#cfc1f2','#f2e2a2','#d8d8e4'];
   const ZONES = {
-    work:   { label: '작업실', x: [64, 326],  y: [428, 556] },
-    meet:   { label: '회의실', x: [386, 632], y: [468, 572] },
-    lounge: { label: '라운지', x: [694, 942], y: [468, 572] }
+    work:   { label: '작업실', x: [92, 306], y: [482, 566] },
+    meet:   { label: '회의실', x: [398, 620], y: [516, 574] },
+    lounge: { label: '라운지', x: [706, 928], y: [498, 574] }
   };
   const SAMPLES = [
     { id: 's-moa',  name: '모아', initial: 'ㅁ', color: '#bfe0c8', zone: 'meet',   isSample: true, online: true },
@@ -112,13 +112,27 @@
   }
   applyTheme(app.theme);
 
-  /* ───────── 스테이지 스케일 ───────── */
+  /* ───────── 스테이지 스케일 / 모바일 카메라 ───────── */
   function fitStage() {
     const w = stageWrap.clientWidth, h = stageWrap.clientHeight;
     if (!w || !h) return;
-    const s = Math.min(w / 1000, h / 620);
-    stage.style.transform = `translate(-50%,-50%) scale(${s})`;
+    const ratio = w / h;
+    let s, tx = 0;
+    if (ratio >= 1.15) {
+      s = Math.min(w / 1000, h / 620);
+    } else {
+      // 좁은 화면: 방을 크게 보여 주고 내 피클 구역을 따라간다
+      const viewH = 500;
+      s = Math.min(h / viewH, w / 640);
+      const half = (w / s) / 2;
+      const z = ZONES[app.me.zone] || ZONES.work;
+      const cx = (z.x[0] + z.x[1]) / 2;
+      const centerX = clamp(cx, half + 26, 986 - half);
+      tx = (500 - centerX) * s;
+    }
+    stage.style.transform = `translate(calc(-50% + ${tx.toFixed(1)}px), -50%) scale(${s.toFixed(4)})`;
     stage.dataset.scale = s;
+    stage.dataset.tx = tx;
   }
   new ResizeObserver(fitStage).observe(stageWrap);
   window.addEventListener('resize', fitStage);
@@ -381,7 +395,6 @@
         return;
       }
       if (d.t === 'patch') {
-        if (d.from === app.me.id) return;
         if (d.messages || d.tasks || d.members || d.roomName) mergeAll(d);
         if (d.typing) showTyping(d.typing);
         return;
@@ -515,6 +528,7 @@
       : `${app.me.name || '크리'} 혼자 · 초대하면 같이 써요`;
     $('#membersSub').textContent = `지금 ${others.length + 1}명`;
     $('#roomNameInput').value = app.roomName;
+    $$('.zone-jump button').forEach(b => b.classList.toggle('on', b.dataset.zone === app.me.zone));
     updateBadge();
   }
 
@@ -776,7 +790,7 @@
         avatarLayer.appendChild(el);
         const z = ZONES[m.zone] || ZONES.work;
         const x = rand(z.x[0], z.x[1]);
-        const y = rand(z.y[0], z.y[1]) + 22;
+        const y = rand(z.y[0], z.y[1]);
         a = {
           id: m.id, el, x, y, tx: x, ty: y, zone: m.zone || 'work',
           pause: rand(0.2, 4), speed: m.isMe ? 26 : rand(18, 27), member: m
@@ -806,7 +820,7 @@
   }
 
   function place(a) {
-    const s = 0.8 + (a.y - 430) / 150 * 0.26;
+    const s = 0.84 + (a.y - 470) / 104 * 0.22;
     a.el.style.transform = `translate3d(${a.x}px, ${a.y}px, 0) scale(${s.toFixed(3)})`;
     a.el.style.zIndex = String(Math.round(a.y));
   }
@@ -846,7 +860,14 @@
     const el = a.el.querySelector('.c-bubble');
     if (!el) return;
     el.textContent = text;
+    el.style.setProperty('--bs', '0px');
     el.classList.add('show');
+    // 화면 밖으로 나가지 않게 살짝 밀어 준다
+    const bw = el.offsetWidth || 80;
+    let shift = 0;
+    if (a.x - bw / 2 < 34) shift = 34 - (a.x - bw / 2);
+    if (a.x + bw / 2 > 966) shift = 966 - (a.x + bw / 2);
+    el.style.setProperty('--bs', Math.round(shift) + 'px');
     clearTimeout(bubbleTimers.get(a.id));
     bubbleTimers.set(a.id, setTimeout(() => el.classList.remove('show'), ms));
   }
@@ -1187,31 +1208,36 @@
     if (a) bubbleText(a, '안녕하세요! 😊', 2600);
   });
 
-  /* ───────── 문지방: 구역 클릭 ───────── */
-  $$('.zone-label [data-zone], .zone-label[data-zone]').forEach(el => {
+  /* ───────── 구역 이동 ───────── */
+  function moveMe(zone) {
+    if (!ZONES[zone]) return;
+    app.me.zone = zone;
+    LS.set('po:identity', app.me);
+    const a = actors.get(app.me.id);
+    if (a) {
+      a.zone = zone;
+      const zz = ZONES[zone];
+      a.tx = (zz.x[0] + zz.x[1]) / 2;
+      a.ty = (zz.y[0] + zz.y[1]) / 2;
+      a.pause = 0;
+      bubbleText(a, ZOONS(zone) + '(으)로 갑니다~', 1800);
+    }
+    Net.send({ members: [selfMember()] });
+    fitStage();
+    $$('.zone-jump button').forEach(b => b.classList.toggle('on', b.dataset.zone === zone));
+    toast('내 피클이 ' + ZOONS(zone) + '(으)로 이동했어요');
+  }
+
+  $$('[data-zone]').forEach(el => {
     el.style.cursor = 'pointer';
-    el.addEventListener('click', () => {
-      const z = el.dataset.zone;
-      if (!ZONES[z]) return;
-      app.me.zone = z;
-      LS.set('po:identity', app.me);
-      const a = actors.get(app.me.id);
-      if (a) {
-        a.zone = z;
-        const zz = ZONES[z];
-        a.tx = (zz.x[0] + zz.x[1]) / 2;
-        a.ty = (zz.y[0] + zz.y[1]) / 2 + 10;
-        a.pause = 0;
-        bubbleText(a, ZOONS(z) + '(으)로 갑니다~', 1800);
-      }
-      Net.send({ members: [selfMember()] });
-      toast('내 피클이 ' + ZOONS(z) + '(으)로 이동했어요');
-    });
+    el.addEventListener('click', () => moveMe(el.dataset.zone));
   });
 
   /* ───────── 힌트 닫기 ───────── */
-  $('#hintClose').addEventListener('click', () => { $('#stageHint').hidden = true; LS.set('po:hintClosed', 1); });
+  function hideHint() { $('#stageHint').hidden = true; LS.set('po:hintClosed', 1); }
+  $('#hintClose').addEventListener('click', hideHint);
   if (LS.get('po:hintClosed', 0)) $('#stageHint').hidden = true;
+  setTimeout(() => { if (!$('#stageHint').hidden) { $('#stageHint').style.opacity = '0'; setTimeout(hideHint, 400); } }, 14000);
 
   $('#themeBtn').addEventListener('click', () => {
     applyTheme(app.theme === 'dark' ? 'light' : 'dark');
