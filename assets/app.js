@@ -691,7 +691,6 @@
         <div class="c-name">${esc(m.name)}</div>
         <div class="c-bubble"></div>
       </div>`;
-    d.addEventListener('click', () => poke(m));
     return d;
   }
 
