@@ -28,9 +28,9 @@
   const INITIALS = ['ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
   const COLORS = ['#e8d5b5','#ffc9a3','#f6c2c8','#bfe0c8','#bfd9f2','#cfc1f2','#f2e2a2','#d8d8e4'];
   const ZONES = {
-    work:   { label: '작업실', x: [92, 306], y: [482, 566] },
-    meet:   { label: '회의실', x: [398, 620], y: [516, 574] },
-    lounge: { label: '라운지', x: [706, 928], y: [498, 574] }
+    work:   { label: '작업실', x: [92, 306], y: [482, 556] },
+    meet:   { label: '회의실', x: [398, 620], y: [512, 556] },
+    lounge: { label: '라운지', x: [706, 928], y: [498, 558] }
   };
   const SAMPLES = [
     { id: 's-moa',  name: '모아', initial: 'ㅁ', color: '#bfe0c8', zone: 'meet',   isSample: true, online: true },

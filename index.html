@@ -7,7 +7,7 @@
 <meta name="description" content="피클들이 함께 일하는 귀여운 2D 합동 비서실 — 같이 채팅하고, 업무를 나누고, 다른 피클을 초대해요." />
 <meta name="theme-color" content="#f6f2ec" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏢</text></svg>" />
-<link rel="stylesheet" href="assets/style.css?v=7" />
+<link rel="stylesheet" href="assets/style.css?v=8" />
 </head>
 <body>
 
@@ -44,6 +44,7 @@
             </linearGradient>
           </defs>
           <!-- 벽 -->
+          <rect class="accent-wall" x="352" y="16" width="312" height="212" rx="14"/>
           <rect class="wall" x="30" y="-10" width="940" height="236" rx="20"/>
           <rect class="wall-stripe" x="30" y="200" width="940" height="26"/>
           <rect class="wall-base" x="30" y="222" width="940" height="8" rx="4"/>
@@ -61,6 +62,9 @@
                      M120 456v96M520 456v96M860 456v96"/>
           </g>
           <rect class="floor-glow" x="30" y="230" width="940" height="70"/>
+          <rect class="base-shadow" x="30" y="230" width="940" height="18"/>
+          <ellipse class="rug rug-meet" cx="504" cy="470" rx="172" ry="70"/>
+          <path class="rug-ring" d="M348 470a156 58 0 0 0 312 0M348 470a156 58 0 0 1 312 0"/>
 
           <!-- 천장 조명 -->
           <g class="pendant">
@@ -518,6 +522,6 @@
 <div class="toast" id="toast" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js" defer></script>
-<script src="assets/app.js?v=7" defer></script>
+<script src="assets/app.js?v=8" defer></script>
 </body>
 </html>

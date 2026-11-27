@@ -178,6 +178,8 @@ html[data-theme="dark"] .stage-wrap{
 
 /* SVG 스타일 */
 .wall{fill:var(--wall)}
+.accent-wall{fill:var(--sage);opacity:.18}
+.base-shadow{fill:#000000;opacity:.06}
 .wall-stripe{fill:var(--wall-2);opacity:.75}
 .wall-base{fill:var(--wall-line)}
 .floor{fill:var(--floor)}
@@ -276,6 +278,8 @@ html[data-theme="dark"] .lamp-glow{fill:#ffd98f;opacity:.22}
 .divider-shadow{fill:#00000010}
 .obj-shadow{fill:#00000012}
 .rug-work{fill:var(--sage);opacity:.14}
+.rug-meet{fill:var(--sky);opacity:.16}
+.rug-ring{stroke:#ffffff;stroke-width:2;opacity:.35;fill:none}
 .rug-line{stroke:var(--sage-2);stroke-width:2;opacity:.3;fill:none;stroke-dasharray:6 8;stroke-linecap:round}
 .board-title{font-family:inherit;font-size:12px;font-weight:800;fill:#7d6f9a;letter-spacing:.4px}
 
