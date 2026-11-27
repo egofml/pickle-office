@@ -743,8 +743,17 @@
 
   function pickTarget(a) {
     const z = ZONES[a.zone] || ZONES.work;
-    a.tx = rand(z.x[0], z.x[1]);
-    a.ty = rand(z.y[0], z.y[1]);
+    for (let i = 0; i < 8; i++) {
+      const tx = rand(z.x[0], z.x[1]);
+      const ty = rand(z.y[0], z.y[1]);
+      let tooClose = false;
+      for (const b of actors.values()) {
+        if (b === a) continue;
+        if (Math.abs(b.tx - tx) < 62 && Math.abs(b.ty - ty) < 34) { tooClose = true; break; }
+      }
+      a.tx = tx; a.ty = ty;
+      if (!tooClose) break;
+    }
   }
 
   function tick(now) {

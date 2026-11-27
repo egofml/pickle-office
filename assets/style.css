@@ -178,7 +178,7 @@ html[data-theme="dark"] .stage-wrap{
 
 /* SVG 스타일 */
 .wall{fill:var(--wall)}
-.accent-wall{fill:var(--sage);opacity:.18}
+.accent-wall{fill:var(--sage-2);opacity:.22}
 .base-shadow{fill:#000000;opacity:.06}
 .wall-stripe{fill:var(--wall-2);opacity:.75}
 .wall-base{fill:var(--wall-line)}
