@@ -1119,7 +1119,12 @@
   }
   $('#profName').addEventListener('input', e => { profDraft.name = e.target.value; paintProf(); });
   $('#profDone').addEventListener('click', () => {
-    const name = (profDraft.name || '').trim().slice(0, 10) || '크리';
+    const name = (profDraft.name || '').trim().slice(0, 10);
+    if (!name) {
+      toast('내 피클 이름을 먼저 적어 주세요');
+      $('#profName').focus();
+      return;
+    }
     app.me.name = name;
     app.me.initial = profDraft.initial;
     app.me.color = profDraft.color;
